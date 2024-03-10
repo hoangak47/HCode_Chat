@@ -8,8 +8,7 @@ import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { useEffect, useRef } from 'react';
 
-const URL = process.env.NODE_ENV === 'production' ? undefined : 'https://hcode-chat.onrender.com/';
-console.log(process.env);
+const URL = 'https://hcode-chat.onrender.com/';
 
 export function useSocket() {
     const socketRef = useRef();
