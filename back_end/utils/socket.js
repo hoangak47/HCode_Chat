@@ -100,6 +100,7 @@ function SocketIo(socketIo) {
 
     socket.on("send-message", async (data) => {
       const { message, id, id_room } = data;
+      console.log(message);
 
       try {
         const chatRoom = await ChatRoom.findById(id_room);

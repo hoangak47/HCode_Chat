@@ -113,6 +113,8 @@ function User_chat({ socketRef }) {
 
         const message = e.target.message.value;
 
+        console.log('message', message);
+
         if (message) {
             socketRef.current.emit('send-message', {
                 message,
