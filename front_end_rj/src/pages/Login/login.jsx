@@ -4,12 +4,13 @@ import axios from 'axios';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { url } from '~/App';
 import { setAccessToken, setListFriend, setUser } from '~/app/features/userSlice';
 import { SGVLogo, SVG_eye_slash_thin, SVG_eye_thin, SVG_ri_lock_2_line, SVG_ri_mail_line } from '~/assets/SVG';
 
 export async function getListsFriend(accessToken, user, dispatch) {
     try {
-        const res = await axios.get(`http://localhost:5000/api/v1/auth/friends`, {
+        const res = await axios.get(`${url}api/v1/auth/friends`, {
             headers: {
                 'x-access-token': accessToken,
                 id: user._id,
@@ -46,7 +47,7 @@ function Login() {
             return;
         }
 
-        const res = await fetch('http://localhost:5000/api/v1/auth/login', {
+        const res = await fetch(`${url}api/v1/auth/login`, {
             method: 'POST',
             credentials: 'include',
             headers: {

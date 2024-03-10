@@ -7,6 +7,7 @@ const userSlice = createSlice({
         accessToken: '',
         listFriend: [],
         searchResult: [],
+        message: [],
     },
     reducers: {
         setUser: (state, action) => {
@@ -21,9 +22,12 @@ const userSlice = createSlice({
         setSearchResult: (state, action) => {
             state.searchResult = action.payload;
         },
+        setMessage: (state, action) => {
+            state.message = action.payload;
+        },
     },
 });
 
-export const { setUser, setAccessToken, setListFriend, setSearchResult } = userSlice.actions;
+export const { setUser, setAccessToken, setListFriend, setSearchResult, setMessage } = userSlice.actions;
 
 export default userSlice.reducer;

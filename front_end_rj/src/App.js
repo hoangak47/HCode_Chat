@@ -3,6 +3,8 @@ import Home from './pages/Home/home';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
 
+export const url = process.env.REACT_APP_API_URL;
+
 function App() {
     return (
         <Routes>

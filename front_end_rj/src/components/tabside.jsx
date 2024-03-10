@@ -3,13 +3,7 @@ import { Tooltip } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTab } from '~/app/features/tabSlice';
-import {
-    SVG_ri_contacts_line,
-    SVG_ri_group_line,
-    SVG_ri_message_3_line,
-    SVG_ri_settings_3_line,
-    SVG_user_2_line,
-} from '~/assets/SVG';
+import { SVG_ri_contacts_line, SVG_ri_group_line, SVG_ri_message_3_line, SVG_user_2_line } from '~/assets/SVG';
 
 const arrTabs = [
     {
@@ -36,12 +30,12 @@ const arrTabs = [
         icon: <SVG_ri_contacts_line width={24} height={24} />,
         label: 'Contacts',
     },
-    {
-        key: 5,
-        // icon: SVG_ri_settings_3_line(24, 24),
-        icon: <SVG_ri_settings_3_line width={24} height={24} />,
-        label: 'Setting',
-    },
+    // {
+    //     key: 5,
+    //     // icon: SVG_ri_settings_3_line(24, 24),
+    //     icon: <SVG_ri_settings_3_line width={24} height={24} />,
+    //     label: 'Setting',
+    // },
 ];
 
 export default function Tabside() {

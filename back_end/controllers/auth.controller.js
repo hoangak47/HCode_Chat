@@ -15,7 +15,7 @@ const auth = {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: 15 * 60,
+        expiresIn: 60 * 60,
       }
     );
 
@@ -64,7 +64,14 @@ const auth = {
       const accessToken = auth.generateAccessToken(user._id);
       const refreshToken = auth.generateRefreshToken(user._id);
 
-      const test = await Token.findOne({ _id: user._id });
+      await User.findOneAndUpdate(
+        {
+          _id: user._id,
+        },
+        {
+          online: true,
+        }
+      );
 
       await Token.findOneAndUpdate(
         { _id: user._id },
@@ -191,7 +198,7 @@ const auth = {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(401).send({
+      return res.status(403).send({
         message: "Refresh Token is required",
       });
     }
@@ -199,7 +206,7 @@ const auth = {
     const refreshTokenInDB = await Token.findOne({ _id: id });
 
     if (refreshToken !== refreshTokenInDB.token) {
-      return res.status(401).send({
+      return res.status(403).send({
         message: "Refresh Token is not valid",
       });
     }
@@ -209,26 +216,12 @@ const auth = {
       process.env.REFRESH_TOKEN_SECRET,
       async (error, decoded) => {
         if (error) {
-          return res.status(401).send({
+          return res.status(403).send({
             message: "Refresh Token is not valid",
           });
         }
 
         const accessToken = auth.generateAccessToken(decoded.id);
-        const refreshToken = auth.generateRefreshToken(decoded.id);
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          path: "/",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
-        Token.findOneAndUpdate(
-          { _id: id },
-          {
-            token: refreshToken,
-          }
-        );
 
         return res.status(200).send({
           message: "Token refreshed successfully",

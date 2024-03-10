@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { setAccessToken } from './app/features/userSlice';
+import { url } from './App';
 
 const refreshToken = async (id) => {
     try {
-        const data = await axios.get(`http://localhost:5000/api/v1/auth/refresh-token?id=${id}`, {
+        const data = await axios.get(`${url}api/v1/auth/refresh-token?id=${id}`, {
             withCredentials: true,
         });
         return data;

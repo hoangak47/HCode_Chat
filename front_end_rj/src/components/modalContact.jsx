@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-pascal-case */
 import { Modal, message } from 'antd';
 import React from 'react';
 import { setSearchResult } from '~/app/features/userSlice';
@@ -43,7 +44,7 @@ export default function ModalContact({
             accessToken: accessToken,
         });
 
-        message.success('Add friend success');
+        message.success('Request friend success');
     };
 
     const handleCancel = () => {
@@ -52,6 +53,7 @@ export default function ModalContact({
         dispatch(setSearchResult([]));
         setSearch(null);
     };
+
     return (
         <Modal title="Add friend" open={isModalOpen} onCancel={handleCancel} footer={null}>
             <div className="flex flex-col">
@@ -85,6 +87,10 @@ export default function ModalContact({
                                                 <div className="w-8 h-8 rounded-full bg-current-color-hover text-current-color flex items-center justify-center">
                                                     {item.username[0]}
                                                 </div>
+                                            )}
+
+                                            {item.online && (
+                                                <div className="absolute bottom-0 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                                             )}
                                         </div>
                                         <div className="flex flex-col ml-4">

@@ -5,16 +5,25 @@ const search = {
     const { search } = req.query;
     const { id } = req.headers;
 
+    let users = null;
+
     if (!search) {
       return res.status(400).send({
         message: "Search is required",
       });
     }
 
-    const users = await User.find({
-      username: { $regex: search, $options: "i" },
-      _id: { $ne: id },
-    }).select("_id username email image online");
+    if (search.includes("@")) {
+      users = await User.find({
+        email: { $regex: search, $options: "i" },
+        _id: { $ne: id },
+      }).select("_id username email image online");
+    } else {
+      users = await User.find({
+        username: { $regex: search, $options: "i" },
+        _id: { $ne: id },
+      }).select("_id username email image online");
+    }
 
     const friend = await Friend.find({
       $or: [{ id_user: id }, { id_friend: id }],

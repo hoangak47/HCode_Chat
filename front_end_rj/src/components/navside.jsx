@@ -1,20 +1,45 @@
 /* eslint-disable react/jsx-pascal-case */
-import { Dropdown, Tooltip } from 'antd';
+import { Dropdown, Tooltip, message } from 'antd';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { url } from '~/App';
+import { setRoom } from '~/app/features/roomSlice';
 import { setTab } from '~/app/features/tabSlice';
-import {
-    SVG_ri_global_line,
-    SVG_ri_logout_circle_r_line,
-    SVG_ri_moon_line,
-    SVG_ri_profile_lin,
-    SVG_ri_settings_3_line,
-} from '~/assets/SVG';
+import { setAccessToken, setMessage, setUser } from '~/app/features/userSlice';
+import { SVG_ri_global_line, SVG_ri_logout_circle_r_line, SVG_ri_moon_line, SVG_ri_profile_lin } from '~/assets/SVG';
+import newInstanceAxios from '~/newInstanceAxios';
+import { useSocket } from '~/services/connectSocket';
+
+async function logout(id, accessToken, navigate, dispatch, socketRef) {
+    try {
+        let axiosJWT = await newInstanceAxios(accessToken, dispatch);
+        await axiosJWT.get(`${url}api/v1/auth/logout?id=${id}`, {
+            withCredentials: true,
+            headers: {
+                'x-access-token': accessToken,
+            },
+        });
+
+        message.success('User logged out successfully');
+        dispatch(setUser({}));
+        dispatch(setTab('Message'));
+        dispatch(setRoom([]));
+        dispatch(setMessage([]));
+        dispatch(setAccessToken(''));
+        navigate('/login');
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 function Navside() {
+    const socketRef = useSocket();
     const dispatch = useDispatch();
 
     const user = useSelector((state) => state.user.user);
+    const accessToken = useSelector((state) => state.user.accessToken);
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -31,20 +56,20 @@ function Navside() {
                 </div>
             ),
         },
-        {
-            key: '2',
-            label: (
-                <div
-                    className="flex w-[160px] px-4 justify-between items-center text-secondary-color"
-                    onClick={() => {
-                        dispatch(setTab('Setting'));
-                    }}
-                >
-                    <label>Setting</label>
-                    <SVG_ri_settings_3_line width={16} height={16} />
-                </div>
-            ),
-        },
+        // {
+        //     key: '2',
+        //     label: (
+        //         <div
+        //             className="flex w-[160px] px-4 justify-between items-center text-secondary-color"
+        //             onClick={() => {
+        //                 dispatch(setTab('Setting'));
+        //             }}
+        //         >
+        //             <label>Setting</label>
+        //             <SVG_ri_settings_3_line width={16} height={16} />
+        //         </div>
+        //     ),
+        // },
         {
             type: 'divider',
             style: {
@@ -57,7 +82,7 @@ function Navside() {
                 <div
                     className="flex w-[160px] px-4 justify-between items-center text-secondary-color"
                     onClick={() => {
-                        console.log('logout');
+                        logout(user?._id, accessToken, navigate, dispatch, socketRef);
                     }}
                 >
                     <label>Logout</label>

@@ -4,9 +4,10 @@ import { Link, useParams } from 'react-router-dom';
 import FormSearch from './formSearch';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpen, setRoom } from '~/app/features/roomSlice';
-import axios from 'axios';
+import newInstanceAxios from '~/newInstanceAxios';
+import { url } from '~/App';
 
-function Message({ socketRef }) {
+function Message() {
     const params = useParams();
 
     const [moveToListMessage, setMoveToListMessage] = React.useState(false);
@@ -18,10 +19,12 @@ function Message({ socketRef }) {
 
     const listMessage = useSelector((state) => state.room.room);
 
+    let axiosJWT = newInstanceAxios(accessToken, dispatch);
+
     React.useEffect(() => {
         if (Object.keys(user).length) {
-            axios
-                .get('http://localhost:5000/api/v1/chat/', {
+            axiosJWT
+                .get(`${url}api/v1/chat/`, {
                     headers: {
                         'x-access-token': accessToken,
                         id: user._id,
@@ -31,7 +34,7 @@ function Message({ socketRef }) {
                     dispatch(setRoom(res.data));
                 })
                 .catch((err) => {
-                    console.log(err);
+                    // console.log(err);
                 });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

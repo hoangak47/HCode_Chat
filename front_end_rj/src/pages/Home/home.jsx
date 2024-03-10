@@ -6,7 +6,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addRoom, setInfo, setOpen, setOpenProfile, setRoom } from '~/app/features/roomSlice';
-import { setAccessToken, setListFriend, setSearchResult, setUser } from '~/app/features/userSlice';
+import { setAccessToken, setListFriend, setMessage, setSearchResult, setUser } from '~/app/features/userSlice';
 import Side_chat from '~/layouts/SideChat/side_chat';
 import Side_menu from '~/layouts/SideMenu/side_menu';
 import User_chat from '~/layouts/UserChat/user_chat';
@@ -22,6 +22,8 @@ function Home() {
     const listFriend = useSelector((state) => state.user.listFriend);
     const searchResult = useSelector((state) => state.user.searchResult);
     const infoRoom = useSelector((state) => state.room.infoRoom);
+    const message_ = useSelector((state) => state.user.message);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -36,7 +38,6 @@ function Home() {
     }, [listMessage, navigate, params.id, user]);
 
     React.useEffect(() => {
-        socketRef.current?.emit('online', user._id);
         socketRef.current?.on('new-access-token', (data) => {
             if (data.id !== user._id) return;
             dispatch(setAccessToken(data.accessToken));
@@ -197,6 +198,12 @@ function Home() {
             dispatch(setListFriend(updatedListFriend));
         });
 
+        socketRef.current?.on('receive-message', (data) => {
+            if (data.chatRoom === String(params.id)) {
+                dispatch(setMessage([data, ...message_]));
+            }
+        });
+
         return () => {
             socketRef.current?.off('new-access-token');
             socketRef.current?.off('error');
@@ -207,9 +214,10 @@ function Home() {
             socketRef.current?.off('receive-update-member');
             socketRef.current?.off('receive-accept-friend');
             socketRef.current?.off('receive-decline-friend');
+            socketRef.current?.off('receive-message');
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socketRef.current, accessToken, listMessage, infoRoom, listFriend, searchResult]);
+    }, [socketRef.current, accessToken, listMessage, infoRoom, listFriend, searchResult, user]);
 
     React.useEffect(() => {
         socketRef.current?.on('room-update', (id) => {
@@ -243,7 +251,7 @@ function Home() {
 
         socketRef.current?.on('receive-edit-room', (data) => {
             dispatch(setInfo(data));
-            dispatch(setRoom(listMessage.map((item) => (item._id === data._id ? data : item))));
+            dispatch(setRoom(listMessage?.map((item) => (item._id === data._id ? data : item))));
         });
 
         return () => {

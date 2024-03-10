@@ -2,6 +2,7 @@
 import { message, notification } from 'antd';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { url } from '~/App';
 import {
     SGVLogo,
     SVG_eye_slash_thin,
@@ -31,7 +32,7 @@ function Register() {
             return;
         }
 
-        const res = await fetch('http://localhost:5000/api/v1/auth/register', {
+        const res = await fetch(`${url}api/v1/auth/register`, {
             method: 'POST',
             credentials: 'include',
             headers: {

@@ -3,19 +3,21 @@
 import React, { Fragment } from 'react';
 import { SVG_ri_user_add_line } from '~/assets/SVG';
 import FormSearch from './formSearch';
-import { Divider, message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { Divider } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpen } from '~/app/features/roomSlice';
 import { useDebounce } from '@uidotdev/usehooks';
 import { getListsFriend } from '~/pages/Login/login';
-import axios from 'axios';
 import { setSearchResult } from '~/app/features/userSlice';
 import ModalContact from './modalContact';
+import newInstanceAxios from '~/newInstanceAxios';
+import { url } from '~/App';
 
-const searchUser = async (id, search, accessToken, dispatch) => {
+const searchUser = async (id, search, accessToken, dispatch, navigate) => {
+    let axiosJWT = await newInstanceAxios(accessToken, dispatch, navigate);
     try {
-        const res = await axios.get(`http://localhost:5000/api/v1/search?search=${search}`, {
+        const res = await axiosJWT.get(`${url}api/v1/search?search=${search}`, {
             headers: {
                 'x-access-token': accessToken,
                 id,
@@ -32,6 +34,7 @@ function Contacts({ socketRef }) {
     const user = useSelector((state) => state.user.user);
     const listFriend = useSelector((state) => state.user.listFriend);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const accessToken = useSelector((state) => state.user.accessToken);
 
     const [friends, setFriends] = React.useState(null);
@@ -96,9 +99,9 @@ function Contacts({ socketRef }) {
             return;
         }
 
-        searchUser(user._id, debouncedSearch, accessToken, dispatch);
+        searchUser(user._id, debouncedSearch, accessToken, dispatch, navigate);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedSearch]);
+    }, [debouncedSearch, accessToken]);
 
     return (
         <>
@@ -163,8 +166,8 @@ function Contacts({ socketRef }) {
                                                     </div>
                                                 )}
                                                 {/* {message.online && (
-                                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                                        )} */}
+                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                                                )} */}
                                             </div>
                                             <div className="flex flex-col ml-4">
                                                 <span className="text-sm text-black font-semibold">

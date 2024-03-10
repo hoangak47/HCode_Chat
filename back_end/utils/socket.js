@@ -28,58 +28,59 @@ function SocketIo(socketIo) {
       }
     }
     socket.use((packet, next) => {
-      if (packet[0] !== "online") {
-        const { id, accessToken } = packet[1];
+      const { id, accessToken } = packet[1];
+      if (accessToken) {
         jwt.verify(
           accessToken,
           process.env.ACCESS_TOKEN_SECRET,
-          (error, decoded) => {
-            if (error) {
-              if (error.name === "TokenExpiredError") {
-                const refreshToken = socket.handshake.headers.cookie.includes(
-                  "refreshToken"
-                )
-                  ? socket.handshake.headers.cookie
-                      .split("refreshToken=")[1]
-                      .split(";")[0]
-                  : null;
+          async (err, decoded) => {
+            if (err) {
+              if (err.name === "TokenExpiredError") {
+                const refreshToken = socket.handshake.headers.cookie
+                  ?.split("refreshToken=")[1]
+                  ?.split(";")[0];
 
-                try {
-                  const checkRefreshToken = jwt.verify(
-                    refreshToken,
-                    process.env.REFRESH_TOKEN_SECRET
-                  );
-                  const newAccessToken = auth.generateAccessToken(
-                    checkRefreshToken.id
-                  );
-                  socket.emit("new-access-token", {
-                    accessToken: newAccessToken,
-                    id,
-                  });
-                  next();
-                } catch (error) {
+                if (!refreshToken) {
                   socket.emit("error", { message: "Unauthorized", id });
+                  return next(new Error("Unauthorized"));
                 }
-              } else {
-                socket.emit("error", { message: "Unauthorized", id });
+
+                jwt.verify(
+                  refreshToken,
+                  process.env.REFRESH_TOKEN_SECRET,
+                  async (err, decoded) => {
+                    if (err) {
+                      socket.emit("error", { message: "Unauthorized", id });
+                      return next(new Error("Unauthorized"));
+                    }
+
+                    const newAccessToken = auth.generateAccessToken(decoded.id);
+
+                    socket.emit("new-access-token", {
+                      accessToken: newAccessToken,
+                      id,
+                    });
+
+                    next();
+                  }
+                );
               }
-            } else {
-              next();
+
+              socket.emit("error", { message: "Unauthorized", id });
+              return next(new Error("Unauthorized"));
             }
+
+            if (id !== decoded.id) {
+              socket.emit("error", { message: "Access token not valid", id });
+            }
+
+            next();
           }
         );
-      } else {
-        next();
       }
     });
 
-    socket.on("online", async (id) => {
-      try {
-        await User.findByIdAndUpdate(id, { online: true }, { new: true });
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    console.log(userOnline);
 
     socket.on("change-profile", async (data) => {
       const { phone, address, id } = data;
@@ -230,7 +231,6 @@ function SocketIo(socketIo) {
 
         if (user.length === 1 && !chatRoom.isGroupChat) {
           await ChatRoom.findByIdAndDelete(id_room);
-          console.log("delete");
           socketIo.emit("receive-leave-room", id_room);
         } else {
           await ChatRoom.findByIdAndUpdate(
@@ -304,7 +304,6 @@ function SocketIo(socketIo) {
 
     socket.on("decline-friend", async (data) => {
       const { id_table } = data;
-      console.log(id_table);
 
       try {
         await Friend.findByIdAndDelete(id_table);
@@ -350,14 +349,15 @@ function SocketIo(socketIo) {
         { online: false },
         { new: true }
       );
-      await Token.findByIdAndUpdate(
-        userOnline[index]?.userId,
-        { token: "" },
-        { new: true }
-      );
+      // await Token.findByIdAndUpdate(
+      //   userOnline[index]?.userId,
+      //   { token: "" },
+      //   { new: true }
+      // );
       if (index !== -1) {
         userOnline.splice(index, 1);
       }
+      console.log(userOnline);
     });
   });
 }

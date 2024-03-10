@@ -9,7 +9,7 @@ function Chat({ message_, user, page, setPage }) {
     const onScroll = () => {
         const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
 
-        if (clientHeight - scrollHeight >= scrollTop) {
+        if (clientHeight - scrollHeight >= scrollTop && clientHeight - scrollHeight < -100) {
             setPage(page + 1);
         }
     };
