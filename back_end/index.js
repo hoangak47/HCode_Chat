@@ -6,11 +6,14 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const SocketIo = require("./utils/socket");
 
+const url = "https://h-code-chat.vercel.app";
+// "http://localhost:3000"
+
 const app = express();
 const server = http.createServer(app);
 const socketIo = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: url,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -24,7 +27,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: url,
     credentials: true,
   })
 );
