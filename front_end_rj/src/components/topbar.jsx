@@ -23,8 +23,8 @@ function Loadding() {
                     </div>
                 </div>
                 <div className="ml-3">
-                    <p className="text-base font-semibold text-gray-900 text-line-1 w-20 bg-gray-200 rounded-sm h-4 mb-1"></p>
-                    <p className="text-xs font-medium text-gray-500 w-10 bg-gray-200 rounded-sm h-4"></p>
+                    <p className="text-base font-semibold text-gray-900 text-line-1 w-12 bg-gray-200 rounded-sm h-4 mb-1"></p>
+                    <p className="text-xs font-medium text-gray-500 w-8 bg-gray-200 rounded-sm h-4"></p>
                 </div>
             </div>
             <div className="flex items-center">
