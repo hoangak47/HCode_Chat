@@ -80,8 +80,6 @@ function SocketIo(socketIo) {
       }
     });
 
-    console.log(userOnline);
-
     socket.on("change-profile", async (data) => {
       const { phone, address, id } = data;
 
@@ -100,7 +98,6 @@ function SocketIo(socketIo) {
 
     socket.on("send-message", async (data) => {
       const { message, id, id_room } = data;
-      console.log(message);
 
       try {
         const chatRoom = await ChatRoom.findById(id_room);
@@ -358,7 +355,6 @@ function SocketIo(socketIo) {
       if (index !== -1) {
         userOnline.splice(index, 1);
       }
-      console.log(userOnline);
     });
   });
 }

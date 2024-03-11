@@ -6,8 +6,10 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const SocketIo = require("./utils/socket");
 
-const url = "https://h-code-chat.vercel.app";
-// "http://localhost:3000"
+const url =
+  process.env.NODE_ENV === "production"
+    ? process.env.URL
+    : "http://localhost:3000";
 
 const app = express();
 const server = http.createServer(app);

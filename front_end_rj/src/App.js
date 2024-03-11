@@ -3,9 +3,10 @@ import Home from './pages/Home/home';
 import Login from './pages/Login/login';
 import Register from './pages/Register/register';
 
-export const url = process.env.REACT_APP_API_URL;
+export const url = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'http://localhost:5000/';
 
 function App() {
+    console.log(url);
     return (
         <Routes>
             <Route path="/" element={<Home />} />

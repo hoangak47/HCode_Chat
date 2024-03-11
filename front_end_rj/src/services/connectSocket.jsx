@@ -1,14 +1,10 @@
-// import { io } from 'socket.io-client';
-
-// const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:5000';
-
-// export const socketRef = io(URL);
+import { url } from '../App';
 
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { useEffect, useRef } from 'react';
 
-const URL = 'https://hcode-chat.onrender.com/';
+// const URL = process.env.NODE_ENV === 'production' ? url : 'http://localhost:5000';
 
 export function useSocket() {
     const socketRef = useRef();
@@ -19,7 +15,7 @@ export function useSocket() {
 
     useEffect(() => {
         // Pass id and accessToken as query parameters in the connection
-        socketRef.current = io(URL, {
+        socketRef.current = io(url, {
             query: {
                 id: user._id,
                 accessToken,
