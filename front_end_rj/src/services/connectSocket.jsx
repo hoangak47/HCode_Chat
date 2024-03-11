@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { useEffect, useRef } from 'react';
 
-// const URL = process.env.NODE_ENV === 'production' ? url : 'http://localhost:5000';
-
 export function useSocket() {
     const socketRef = useRef();
 

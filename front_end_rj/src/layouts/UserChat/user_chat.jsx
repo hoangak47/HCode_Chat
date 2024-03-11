@@ -23,7 +23,9 @@ async function getMessages(
     page = 1,
     setCheckResultEmpty = null,
     navigate = null,
+    setLoading,
 ) {
+    setLoading(true);
     let axiosJWT = newInstanceAxios(accessToken, dispatch);
 
     await axiosJWT
@@ -50,6 +52,8 @@ async function getMessages(
                 navigate('/login');
             }
         });
+
+    setLoading(false);
 }
 
 async function getInfoRoom(id, accessToken, user, dispatch) {
@@ -70,6 +74,14 @@ async function getInfoRoom(id, accessToken, user, dispatch) {
     }
 }
 
+function Loadding() {
+    return (
+        <div className="flex flex-col items-center justify-center flex-1">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-fifth-color"></div>
+        </div>
+    );
+}
+
 function User_chat({ socketRef }) {
     const params = useParams();
     const dispatch = useDispatch();
@@ -87,12 +99,15 @@ function User_chat({ socketRef }) {
     const [page, setPage] = React.useState(1);
     const [checkResultEmpty, setCheckResultEmpty] = React.useState(false);
 
+    const [loading, setLoading] = React.useState(false);
+
     React.useEffect(() => {
+        if (loading) return;
         if (Object.keys(user).length && params?.id) {
             setPage(1);
             setCheckResultEmpty(false);
             dispatch(setMessage([]));
-            getMessages(params?.id, accessToken, user, dispatch, [], 1, setCheckResultEmpty, navigate);
+            getMessages(params?.id, accessToken, user, dispatch, [], 1, setCheckResultEmpty, navigate, setLoading);
             getInfoRoom(params?.id, accessToken, user, dispatch);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,7 +115,17 @@ function User_chat({ socketRef }) {
 
     React.useEffect(() => {
         if (Object.keys(user).length && params?.id && !checkResultEmpty) {
-            getMessages(params?.id, accessToken, user, dispatch, message_, page, setCheckResultEmpty, navigate);
+            getMessages(
+                params?.id,
+                accessToken,
+                user,
+                dispatch,
+                message_,
+                page,
+                setCheckResultEmpty,
+                navigate,
+                setLoading,
+            );
             getInfoRoom(params?.id, accessToken, user, dispatch);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,8 +137,6 @@ function User_chat({ socketRef }) {
         e.preventDefault();
 
         const message = e.target.message.value;
-
-        console.log('message', message);
 
         if (message) {
             socketRef.current.emit('send-message', {
@@ -145,9 +168,10 @@ function User_chat({ socketRef }) {
                             dispatch={dispatch}
                             openProfile={openProfile}
                             userIsFriend={userIsFriend}
+                            loading={loading}
                         />
 
-                        <Chat message_={message_} user={user} page={page} setPage={setPage} />
+                        <Chat message_={message_} user={user} page={page} setPage={setPage} loading={loading} />
 
                         <form className="flex px-6 py-7 border-t border-gray-200" onSubmit={(e) => handleSubmit(e)}>
                             <input
