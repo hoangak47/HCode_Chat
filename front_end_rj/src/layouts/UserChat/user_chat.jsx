@@ -56,8 +56,9 @@ async function getMessages(
     setLoading(false);
 }
 
-async function getInfoRoom(id, accessToken, user, dispatch) {
+async function getInfoRoom(id, accessToken, user, dispatch, setLoaddingInfo) {
     if (!id || !accessToken || !user) return;
+    setLoaddingInfo(true);
 
     let axiosJWT = await newInstanceAxios(accessToken, dispatch);
     try {
@@ -72,14 +73,8 @@ async function getInfoRoom(id, accessToken, user, dispatch) {
     } catch (error) {
         // console.log(error);
     }
-}
 
-function Loadding() {
-    return (
-        <div className="flex flex-col items-center justify-center flex-1">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-fifth-color"></div>
-        </div>
-    );
+    setLoaddingInfo(false);
 }
 
 function User_chat({ socketRef }) {
@@ -100,6 +95,7 @@ function User_chat({ socketRef }) {
     const [checkResultEmpty, setCheckResultEmpty] = React.useState(false);
 
     const [loading, setLoading] = React.useState(false);
+    const [loaddingInfo, setLoaddingInfo] = React.useState(false);
 
     React.useEffect(() => {
         if (loading) return;
@@ -108,7 +104,7 @@ function User_chat({ socketRef }) {
             setCheckResultEmpty(false);
             dispatch(setMessage([]));
             getMessages(params?.id, accessToken, user, dispatch, [], 1, setCheckResultEmpty, navigate, setLoading);
-            getInfoRoom(params?.id, accessToken, user, dispatch);
+            getInfoRoom(params?.id, accessToken, user, dispatch, setLoaddingInfo);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params?.id]);
@@ -126,7 +122,7 @@ function User_chat({ socketRef }) {
                 navigate,
                 setLoading,
             );
-            getInfoRoom(params?.id, accessToken, user, dispatch);
+            getInfoRoom(params?.id, accessToken, user, dispatch, setLoaddingInfo);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, accessToken]);
@@ -168,7 +164,7 @@ function User_chat({ socketRef }) {
                             dispatch={dispatch}
                             openProfile={openProfile}
                             userIsFriend={userIsFriend}
-                            loading={loading}
+                            loading={loaddingInfo}
                         />
 
                         <Chat message_={message_} user={user} page={page} setPage={setPage} loading={loading} />
