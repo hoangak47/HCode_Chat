@@ -23,9 +23,9 @@ async function getMessages(
     page = 1,
     setCheckResultEmpty = null,
     navigate = null,
-    setLoading,
+    setLoading = null,
 ) {
-    setLoading(true);
+    setLoading && setLoading(true);
     let axiosJWT = newInstanceAxios(accessToken, dispatch);
 
     await axiosJWT
@@ -53,15 +53,16 @@ async function getMessages(
             }
         });
 
-    setLoading(false);
+    setLoading && setLoading(false);
 }
 
-async function getInfoRoom(id, accessToken, user, dispatch, setLoaddingInfo) {
+async function getInfoRoom(id, accessToken, user, dispatch, setLoaddingInfo = null) {
     if (!id || !accessToken || !user) return;
-    setLoaddingInfo(true);
+    setLoaddingInfo && setLoaddingInfo(true);
 
     let axiosJWT = await newInstanceAxios(accessToken, dispatch);
     try {
+        setLoaddingInfo && dispatch(setInfo(null));
         const res = await axiosJWT.get(`${url}api/v1/chat/${id}`, {
             headers: {
                 'x-access-token': accessToken,
@@ -74,7 +75,7 @@ async function getInfoRoom(id, accessToken, user, dispatch, setLoaddingInfo) {
         // console.log(error);
     }
 
-    setLoaddingInfo(false);
+    setLoaddingInfo && setLoaddingInfo(false);
 }
 
 function User_chat({ socketRef }) {
@@ -103,26 +104,16 @@ function User_chat({ socketRef }) {
             setPage(1);
             setCheckResultEmpty(false);
             dispatch(setMessage([]));
-            getMessages(params?.id, accessToken, user, dispatch, [], 1, setCheckResultEmpty, navigate, setLoading);
             getInfoRoom(params?.id, accessToken, user, dispatch, setLoaddingInfo);
+            getMessages(params?.id, accessToken, user, dispatch, [], 1, setCheckResultEmpty, navigate, setLoading);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params?.id]);
 
     React.useEffect(() => {
         if (Object.keys(user).length && params?.id && !checkResultEmpty) {
-            getMessages(
-                params?.id,
-                accessToken,
-                user,
-                dispatch,
-                message_,
-                page,
-                setCheckResultEmpty,
-                navigate,
-                setLoading,
-            );
-            getInfoRoom(params?.id, accessToken, user, dispatch, setLoaddingInfo);
+            getInfoRoom(params?.id, accessToken, user, dispatch);
+            getMessages(params?.id, accessToken, user, dispatch, message_, page, setCheckResultEmpty, navigate);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, accessToken]);
@@ -156,37 +147,32 @@ function User_chat({ socketRef }) {
             }`}
         >
             <div className={`flex flex-1 flex-col bg-white shadow-md`}>
-                {infoRoom && (
-                    <>
-                        <Topbar
-                            infoRoom={infoRoom}
-                            setOpen={setOpen}
-                            dispatch={dispatch}
-                            openProfile={openProfile}
-                            userIsFriend={userIsFriend}
-                            loading={loaddingInfo}
-                        />
+                <Topbar
+                    infoRoom={infoRoom}
+                    setOpen={setOpen}
+                    dispatch={dispatch}
+                    openProfile={openProfile}
+                    userIsFriend={userIsFriend}
+                    loading={loaddingInfo}
+                />
+                <Chat message_={message_} user={user} page={page} setPage={setPage} loading={loading} />
 
-                        <Chat message_={message_} user={user} page={page} setPage={setPage} loading={loading} />
-
-                        <form className="flex px-6 py-7 border-t border-gray-200" onSubmit={(e) => handleSubmit(e)}>
-                            <input
-                                type="text"
-                                placeholder="Enter your message..."
-                                className="flex-1 px-4 py-2 text-sm text-gray-600 bg-fifth-color rounded-lg focus:outline-none focus:border-transparent"
-                                name="message"
-                                autoComplete="off"
-                                autoFocus={true}
-                            />
-                            <button
-                                type="submit"
-                                className="flex items-center justify-center h-10 w-12 ml-3 cursor-pointer p-2 bg-current-color text-white rounded-md"
-                            >
-                                <SVG_ri_send_plane_2_fill height={16} width={16} />
-                            </button>
-                        </form>
-                    </>
-                )}
+                <form className="flex px-6 py-7 border-t border-gray-200" onSubmit={(e) => handleSubmit(e)}>
+                    <input
+                        type="text"
+                        placeholder="Enter your message..."
+                        className="flex-1 px-4 py-2 text-sm text-gray-600 bg-fifth-color rounded-lg focus:outline-none focus:border-transparent"
+                        name="message"
+                        autoComplete="off"
+                        autoFocus={true}
+                    />
+                    <button
+                        type="submit"
+                        className="flex items-center justify-center h-10 w-12 ml-3 cursor-pointer p-2 bg-current-color text-white rounded-md"
+                    >
+                        <SVG_ri_send_plane_2_fill height={16} width={16} />
+                    </button>
+                </form>
             </div>
             {openProfile && (
                 <DetailProfile
