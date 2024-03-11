@@ -52,6 +52,12 @@ const auth = {
         });
       }
 
+      if (user.online) {
+        return res.status(400).send({
+          message: "User is already online",
+        });
+      }
+
       const comparePassword = bcrypt.compareSync(password, user.password);
       if (!comparePassword) {
         return res.status(400).send({

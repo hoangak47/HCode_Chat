@@ -251,6 +251,7 @@ function Home() {
 
         socketRef.current?.on('receive-edit-room', (data) => {
             dispatch(setInfo(data));
+            message.success('Edit room successfully');
             dispatch(setRoom(listMessage?.map((item) => (item._id === data._id ? data : item))));
         });
 

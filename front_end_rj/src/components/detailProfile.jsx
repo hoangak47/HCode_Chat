@@ -159,7 +159,6 @@ function DetailProfile({ infoRoom, socketRef, user, userIsFriend }) {
 
         setImageChange(null);
         e.target.reset();
-        message.success('Edit room successfully');
     };
 
     const items = [
