@@ -203,7 +203,7 @@ function Group({ socketRef }) {
                                 <div
                                     key={index}
                                     className={`flex items-center py-2 px-4 mb-4 rounded-sm hover:bg-third-color cursor-pointer ${
-                                        params._id === group._id ? 'bg-third-color' : 'bg-transparent'
+                                        params.id === group._id ? 'bg-fifth-color' : 'bg-transparent'
                                     }`}
                                     onClick={() => {
                                         if (params._id !== group._id) {

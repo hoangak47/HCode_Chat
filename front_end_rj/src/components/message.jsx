@@ -31,6 +31,20 @@ const LoaddingListMess = () => {
     );
 };
 
+async function getListMessage(accessToken, user, axiosJWT, dispatch) {
+    try {
+        const res = await axiosJWT.get(`${url}api/v1/chat/`, {
+            headers: {
+                'x-access-token': accessToken,
+                id: user._id,
+            },
+        });
+        dispatch(setRoom(res.data));
+    } catch (err) {
+        // console.log(err);
+    }
+}
+
 function Message() {
     const params = useParams();
 
@@ -48,26 +62,11 @@ function Message() {
     const [loading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
-        if (loading) return;
+        if (listMessage.length > 0) return;
         setLoading(true);
-        if (Object.keys(user).length) {
-            axiosJWT
-                .get(`${url}api/v1/chat/`, {
-                    headers: {
-                        'x-access-token': accessToken,
-                        id: user._id,
-                    },
-                })
-                .then((res) => {
-                    dispatch(setRoom(res.data));
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    // console.log(err);
-                });
-        }
+        getListMessage(accessToken, user, axiosJWT, dispatch).then(() => setLoading(false));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accessToken, user]);
+    }, [listMessage]);
 
     return (
         <>
