@@ -22,9 +22,9 @@ function Loadding() {
                         <div className="w-full h-full rounded-full bg-gray-200 text-current-color flex items-center justify-center"></div>
                     </div>
                 </div>
-                <div className="ml-3">
-                    <p className="text-base font-semibold text-gray-900 text-line-1 w-12 bg-gray-200 rounded-sm h-4 mb-1"></p>
-                    <p className="text-xs font-medium text-gray-500 w-8 bg-gray-200 rounded-sm h-4"></p>
+                <div className="ml-3 ">
+                    <p className="text-base font-semibold text-gray-900 text-line-1 md:w-20 w-8 bg-gray-200 rounded-sm h-4 mb-1"></p>
+                    <p className="text-xs font-medium text-gray-500 md:w-10 w-8 bg-gray-200 rounded-sm h-4"></p>
                 </div>
             </div>
             <div className="flex items-center">
@@ -77,6 +77,7 @@ function Topbar({ infoRoom, setOpen, dispatch, openProfile, userIsFriend, loadin
     }, [infoRoom?.users]);
 
     return (
+        // <Loadding />
         <Fragment>
             {loading ? (
                 <Loadding />
